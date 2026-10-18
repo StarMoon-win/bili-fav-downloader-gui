@@ -1,0 +1,23 @@
+# 本地配置与凭证
+config.json
+cookies.txt
+.cache/
+
+# 打包产物
+dist/
+build/
+*.spec
+
+# 大体积二进制
+bin/*.exe
+bin/*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 运行产物
+*.log
+.task_urls.txt
