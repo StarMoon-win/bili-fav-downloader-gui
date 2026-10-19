@@ -14,7 +14,7 @@
 
 |                  | 🎒 便携版 Portable                        | 📦 安装包 Setup                                  |
 | ---------------- | -------------------------------------- | --------------------------------------------- |
-| 文件名              | `BiliFavDownloader-Portable-1.1.0.exe` | `BiliFavDownloader-Setup-1.1.0.exe`           |
+| 文件名              | `BiliFavDownloader-Portable-1.2.0.exe` | `BiliFavDownloader-Setup-1.2.0.exe`           |
 | 体积               | 约 54 MB                                | 约 43 MB                                       |
 | 需要安装吗            | **不用**，下载完双击就能跑                       | 需要，跑一遍安装向导（约 30 秒）                            |
 | 装到哪              | 你把它放在哪就在哪                              | 默认 `%LOCALAPPDATA%\Programs\BiliFavDownloader`，向导里可以改成任意路径 |
@@ -186,7 +186,7 @@ python build.py --all          # 便携版 + 目录版 + 安装包
 | 产物                                  | 体积     | 说明                                 |
 | ----------------------------------- | ------ | ---------------------------------- |
 | `BiliFavDownloader.exe`             | 约 54 MB | **便携版**：单文件、ffmpeg 内置、双击即用，不写注册表  |
-| `BiliFavDownloader-Setup-1.1.0.exe` | 约 43 MB | **安装包**：可选安装路径，开始菜单 / 桌面快捷方式 + 卸载程序 |
+| `BiliFavDownloader-Setup-1.2.0.exe` | 约 43 MB | **安装包**：可选安装路径，开始菜单 / 桌面快捷方式 + 卸载程序 |
 | `build/onedir/BiliFavDownloader/`   | 约 130 MB | 目录版（安装包的源），启动 1 秒内                  |
 
 单文件版冷启动 3–5 秒，目录版 1 秒内——**这就是为什么要出安装包**。
