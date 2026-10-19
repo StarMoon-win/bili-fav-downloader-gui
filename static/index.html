@@ -211,6 +211,11 @@
       <option value="4k">4K 最高码率（最费空间）</option>
       <option value="1080">1080P</option>
     </select>
+    <label style="margin-left:8px">内容</label>
+    <select id="mode">
+      <option value="video">视频（MP4）</option>
+      <option value="audio">音频（MP3）</option>
+    </select>
     <label style="margin-left:8px">保存到</label>
     <input type="text" id="outDir" placeholder="输出目录">
   </div>
@@ -500,6 +505,7 @@ $('#startBtn').onclick = () => {
   startDownload('/api/download', {
     bvids: idxs.map(i => items[i].bvid),
     quality: $('#quality').value,
+    mode: $('#mode').value,
     out_dir: $('#outDir').value.trim() || undefined,
     title_map: titleMap
   });
@@ -511,6 +517,7 @@ $('#linkBtn').onclick = () => {
   startDownload('/api/download/links', {
     text,
     quality: $('#quality').value,
+    mode: $('#mode').value,
     out_dir: $('#outDir').value.trim() || undefined
   });
 };

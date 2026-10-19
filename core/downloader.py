@@ -45,14 +45,19 @@ class _YdlLogger:
         self.task._fail(str(msg))
 
 
+DOWNLOAD_MODES = {"video", "audio"}
+
+
 class DownloadTask:
     """一次批量下载任务。后台线程跑 yt-dlp，主线程读 snapshot() 拿进度。"""
 
     def __init__(self, urls: list[str], out_dir: str | Path | None = None,
-                 quality: str = "4k-hevc", title_map: dict | None = None) -> None:
+                 quality: str = "4k-hevc", mode: str = "video",
+                 title_map: dict | None = None) -> None:
         self.urls = [u for u in urls if u.strip()]
         self.out_dir = Path(out_dir) if out_dir else default_out()
         self.quality = quality if quality in QUALITY_SORT else "4k-hevc"
+        self.mode = mode if mode in DOWNLOAD_MODES else "video"
         self.title_map = title_map or {}
         self._lock = threading.RLock()
         self._cancel = False
@@ -169,10 +174,8 @@ class DownloadTask:
 
         self.out_dir.mkdir(parents=True, exist_ok=True)
 
-        opts = {
+        opts: dict = {
             "outtmpl": str(self.out_dir / "%(uploader)s" / "%(title).80s [%(id)s].%(ext)s"),
-            "format_sort": QUALITY_SORT[self.quality],
-            "merge_output_format": "mp4",
             "download_archive": str(self.out_dir / ".downloaded.txt"),
             "continuedl": True,
             "retries": 10,
@@ -187,6 +190,17 @@ class DownloadTask:
             "progress_hooks": [self._progress],
             "postprocessor_hooks": [self._postproc],
         }
+        if self.mode == "audio":
+            opts["format"] = "bestaudio/best"
+            opts["postprocessors"] = [{
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "192",
+            }]
+            self._log("模式：仅音频（MP3）")
+        else:
+            opts["format_sort"] = QUALITY_SORT[self.quality]
+            opts["merge_output_format"] = "mp4"
         ff = ffmpeg_path()
         if ff:
             opts["ffmpeg_location"] = str(ff)

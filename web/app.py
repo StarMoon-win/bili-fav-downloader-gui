@@ -154,12 +154,12 @@ def api_items(fid: int):
 
 # ---------------- 下载 ----------------
 def _start_task(urls: list[str], quality: str, out_dir: str,
-                title_map: dict | None = None):
+                mode: str = "video", title_map: dict | None = None):
     global _task
     with _lock:
         if _task and _task.snapshot()["status"] == "running":
             return fail("已有任务在运行，请先停止")
-    _task = DownloadTask(urls, out_dir=out_dir, quality=quality,
+    _task = DownloadTask(urls, out_dir=out_dir, quality=quality, mode=mode,
                          title_map=title_map or {})
     _task.start()
     return ok(total=len(urls), out_dir=out_dir)
@@ -174,9 +174,12 @@ def api_download():
     quality = data.get("quality") or "4k-hevc"
     if quality not in QUALITY_SORT:
         return fail(f"未知画质档位: {quality}")
+    mode = data.get("mode") or "video"
+    if mode not in ("video", "audio"):
+        return fail(f"未知下载模式: {mode}")
     out_dir = data.get("out_dir") or str(default_out())
     urls = [f"https://www.bilibili.com/video/{b}" for b in bvids]
-    return _start_task(urls, quality, out_dir, data.get("title_map") or {})
+    return _start_task(urls, quality, out_dir, mode, data.get("title_map") or {})
 
 
 @app.post("/api/download/links")
@@ -190,8 +193,11 @@ def api_download_links():
     quality = data.get("quality") or "4k-hevc"
     if quality not in QUALITY_SORT:
         return fail(f"未知画质档位: {quality}")
+    mode = data.get("mode") or "video"
+    if mode not in ("video", "audio"):
+        return fail(f"未知下载模式: {mode}")
     out_dir = data.get("out_dir") or str(default_out())
-    return _start_task(urls, quality, out_dir)
+    return _start_task(urls, quality, out_dir, mode)
 
 
 @app.get("/api/status")

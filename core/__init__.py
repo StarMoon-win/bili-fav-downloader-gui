@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """B站收藏夹下载器 - 核心逻辑（Web 与桌面界面共用）"""
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 from . import auth, hints
 from .bili_api import (QUALITY_RATE, BiliClient, BiliError, fmt_duration,

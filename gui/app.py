@@ -15,6 +15,10 @@ QUALITY_LABEL = [
     ("4k", "4K 最高码率（最费空间）"),
     ("1080", "1080P"),
 ]
+MODE_LABEL = [
+    ("video", "视频（MP4）"),
+    ("audio", "音频（MP3）"),
+]
 RATE = {"4k-av1": 0.60, "4k-hevc": 1.00, "4k": 1.50, "1080": 0.45}
 
 
@@ -335,6 +339,11 @@ class App:
                             values=[lbl for _, lbl in QUALITY_LABEL])
         qbox.pack(side="left", padx=6)
         qbox.bind("<<ComboboxSelected>>", lambda e: self._update_stats())
+        ttk.Label(opt, text="内容").pack(side="left", padx=(12, 4))
+        self.mode_var = tk.StringVar(value=MODE_LABEL[0][1])
+        mbox = ttk.Combobox(opt, textvariable=self.mode_var, state="readonly", width=14,
+                            values=[lbl for _, lbl in MODE_LABEL])
+        mbox.pack(side="left", padx=6)
         ttk.Label(opt, text="保存到").pack(side="left", padx=(12, 4))
         self.out_var = tk.StringVar(value=str(default_out()))
         ttk.Entry(opt, textvariable=self.out_var).pack(side="left", fill="x", expand=True)
@@ -527,6 +536,13 @@ class App:
                 return k
         return "4k-hevc"
 
+    def _mode_key(self) -> str:
+        label = self.mode_var.get()
+        for k, lbl in MODE_LABEL:
+            if lbl == label:
+                return k
+        return "video"
+
     def _update_stats(self) -> None:
         if not self.items:
             self.stat_lbl.config(text="—")
@@ -560,13 +576,15 @@ class App:
             return
         out = self.out_var.get().strip() or str(default_out())
         save_config({"out_dir": out})
+        mode = self._mode_key()
         self.task = DownloadTask(urls, out_dir=out, quality=self._quality_key(),
-                                 title_map=title_map or {})
+                                 mode=mode, title_map=title_map or {})
         self.task.start()
         self.start_btn.config(state="disabled")
         self.stop_btn.config(state="normal")
         self.log.delete("1.0", "end")
-        self.hint_lbl.config(text=f"下载 {len(urls)} 条到 {out}")
+        mode_txt = "音频" if mode == "audio" else "视频"
+        self.hint_lbl.config(text=f"下载 {len(urls)} 条{mode_txt}到 {out}")
 
     def _stop(self) -> None:
         if self.task:
